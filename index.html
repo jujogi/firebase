@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase</title>
+
+    <style>
+        #result{
+            background: rgb(221, 220, 220);
+            margin: 20px 0;
+            box-sizing: border-box;
+        }
+
+        .user{
+            border-bottom: solid 1px rgb(179, 179, 179);
+            padding: 20px;
+        }
+
+        .user:last-child{
+            border-bottom: none;
+        }
+
+        .user__button{
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="create__community">
+        <h1>Community</h1>
+        <button id="create">Create a person</button>
+        <button id="get">Get people</button>
+        <input type="text" id="searchInput" placeholder="Search by ID">
+        <button id="search">Search!</button>
+    </div>
+
+    <div class="create__user">
+        <h1>Create a new user</h1>
+        <form action="#" id="createForm">
+            <input type="email" id="email">
+            <input type="password" id="password">
+            <input type="submit" value="Create user">
+        </form>
+    </div>
+
+    <div id="result"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-firestore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+    <script src="./scripts/app.js"></script>
+</body>
+</html>
