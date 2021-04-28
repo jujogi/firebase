@@ -9,28 +9,36 @@ const FIREBASE_CONFIG = {
 
 firebase.initializeApp(FIREBASE_CONFIG);
 
-
 const db = firebase.firestore();
-const COLLECTION = db.collection("community");
+const USER_COLLECTION = db.collection("community");
 const FRIENDS_LS_KEY = "friends";
-
-const friendsLS = localStorage.getItem(FRIENDS_LS_KEY);
-const friends = friendsLS ? JSON.parse(friendsLS) : [];
+const FRIENDS_COLLECTION = db.collection(FRIENDS_LS_KEY);
+let friends = [];
 
 const resetContent = () => resultArea.innerHTML = "";
 
-const askToBeMyFriend = (event, user) => {
-    friends.push(user);
-    localStorage.setItem(FRIENDS_LS_KEY, JSON.stringify(friends));
+const askToBeMyFriend = async (event, user) => {
+    await FRIENDS_COLLECTION.add(user);
     
     const labelButton = event.target;
     labelButton.disabled = true;
     labelButton.innerHTML = "Requested!";
 };
 
-const renderUser = user => {
+const getMyFriends = async () => {
+    const { docs } = await FRIENDS_COLLECTION.get();
+
+    docs.forEach( doc => {
+        const { id, first } = doc.data();
+        friends.push({
+            id,
+            first
+        });
+    });
+};
+
+const renderUser = async (user) => {
     const { id, first, last, email } = user;
-    
     const isMyFriend = friends.some( friend => friend.id === id);
     const button = isMyFriend ? `<button class="user__button" disabled>Requested!</button>` : `<button class="user__button">Ask to be my friend</button>`
 
@@ -58,7 +66,7 @@ const saveUser = async () => {
         last: faker.name.lastName(),
         email: faker.internet.email(),
     };
-    const { id } = await COLLECTION.add(user);
+    const { id } = await USER_COLLECTION.add(user);
     renderUser({
         id,
         ...user,
@@ -67,7 +75,7 @@ const saveUser = async () => {
 
 const getUsers = async () => {
     resetContent();
-    const { docs } = await COLLECTION.get();
+    const { docs } = await USER_COLLECTION.get();
     docs.forEach( doc => {
         const user = doc.data();
         renderUser({
@@ -75,9 +83,6 @@ const getUsers = async () => {
             ...user,
         });
     });
-    if(!docs.length){
-        clearLocalStorage();
-    }
 }
 
 const getUserByFilter = async () => {
@@ -85,7 +90,7 @@ const getUserByFilter = async () => {
     const id = searchInput.value;
     if (id) {
         try {
-            const user = await COLLECTION.doc(id).get();
+            const user = await USER_COLLECTION.doc(id).get();
             if (user.exists) {
                 const userDetails = user.data();
                 renderUser({
@@ -159,6 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         onButtonSignUp();
     })
 
+    getMyFriends();
     getUsers();
 
 });
